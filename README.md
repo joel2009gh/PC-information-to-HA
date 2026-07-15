@@ -18,6 +18,7 @@ Then clone this repo:
 
 git clone https://github.com/joel2009gh/PC-information-to-HA
 then cd into the folder, and edit the config.json (such as the name, your HA url, and LL-token)
+I strongly recommened to use a external IP address.
 
 How to make a Long-Lived Access Token...
 Go to your portal, then click on your profile, then click on security and scroll down.
