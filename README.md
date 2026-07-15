@@ -25,19 +25,7 @@ Then, make a systemd service.
 
 Add:
 
-[Unit]
-Description=Home Assistant System Monitor
-After=network-online.target
-
-[Service]
-User=YOUR_USERNAME
-WorkingDirectory=/home/YOUR_USERNAME
-ExecStart=/home/YOUR_USERNAME/ha-monitor-env/bin/python /home/YOUR_USERNAME/ha_system_monitor.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-
+(copy the .service file to your systemd folder, most likely its in /etc/systemd/system/
 and change /your_username/ to your account's name
 
 To continue, run these commands:
