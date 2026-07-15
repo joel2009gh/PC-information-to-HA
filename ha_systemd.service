@@ -1,0 +1,16 @@
+[Unit]
+Description=Home Assistant Ubuntu System Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=youruser
+WorkingDirectory=/home/youruser
+
+ExecStart=/home/youruser/ha-monitor-env/bin/python /home/youruser/ha_system_monitor.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
