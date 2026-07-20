@@ -25,6 +25,7 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
+
 def send_sensor(entity_name, state, attributes=None):
 
     entity_id = f"sensor.{ENTITY_PREFIX}_{entity_name}"
@@ -59,6 +60,7 @@ def send_sensor(entity_name, state, attributes=None):
             f"Home Assistant connection error: {error}"
         )
 
+
 def format_uptime(seconds):
 
     days = seconds // 86400
@@ -66,6 +68,26 @@ def format_uptime(seconds):
     minutes = (seconds % 3600) // 60
 
     return f"{days}d {hours}h {minutes}m"
+
+
+def get_cpu_temperature():
+
+    try:
+
+        temps = psutil.sensors_temperatures()
+
+        if not temps:
+            return None
+
+        for entries in temps.values():
+            if entries:
+                return round(entries[0].current, 1)
+
+    except Exception:
+        pass
+
+    return None
+
 
 def collect_system_data():
 
@@ -80,6 +102,8 @@ def collect_system_data():
         "memory": psutil.virtual_memory().percent,
 
         "disk": psutil.disk_usage("/").percent,
+
+        "temperature": get_cpu_temperature(),
 
         "uptime_seconds": uptime_seconds,
 
@@ -101,7 +125,6 @@ def main():
     while True:
 
         data = collect_system_data()
-
 
         common = {
             "last_update": data["last_update"],
@@ -135,6 +158,17 @@ def main():
             }
         )
 
+        if data["temperature"] is not None:
+
+            send_sensor(
+                "cpu_temperature",
+                data["temperature"],
+                {
+                    **common,
+                    "unit_of_measurement": "°C"
+                }
+            )
+
         send_sensor(
             "uptime",
             data["uptime"],
@@ -147,10 +181,12 @@ def main():
             f"{DEVICE_NAME}: "
             f"CPU {data['cpu']}% | "
             f"RAM {data['memory']}% | "
-            f"Disk {data['disk']}%"
+            f"Disk {data['disk']}% | "
+            f"Temp {data['temperature']}°C"
         )
 
         time.sleep(UPDATE_INTERVAL)
+
 
 if __name__ == "__main__":
     main()
